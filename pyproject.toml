@@ -1,0 +1,211 @@
+[project]
+name = "pyagent"
+version = "0.1.0"
+description = "Python ReAct agent (LiteLLM + pydantic + MCP)"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "httpx>=0.27",
+    "litellm>=1.50",
+    "mcp>=2,<3",
+    "opentelemetry-api>=1.20",
+    "opentelemetry-exporter-otlp-proto-http>=1.20",
+    "opentelemetry-sdk>=1.20",
+    "pydantic>=2.9",
+    "python-dotenv>=1.0",
+    "tavily-python>=0.5",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pyagent"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+[tool.pixi.dependencies]
+python = "3.12.*"
+pyright = "*"
+rich = "*"
+ruff = "*"
+
+[tool.pixi.pypi-dependencies]
+pyagent = { path = ".", editable = true }
+
+[tool.pixi.activation.env]
+PYTHONPATH = "."
+NO_COLOR = "1"
+PYRIGHT_PYTHON_GLOBAL_NODE = "1"
+LITELLM_SUPPRESS_DEBUG_INFO = "True"
+LITELLM_LOG = "ERROR" 
+
+[tool.pixi.tasks]
+
+# -----------------------------------------------------------------------------
+# Entry points
+# -----------------------------------------------------------------------------
+
+host = "python main.py"
+server = "python -m pyagent.server"
+client = "python -m pyagent.client"
+probe-models = "python scripts/probe_models.py"
+
+# -----------------------------------------------------------------------------
+# Workflows
+# -----------------------------------------------------------------------------
+
+brief = "python -m pyagent.workflows.research_brief"
+iterative-brief = "python -m pyagent.workflows.iterative_brief"
+notes-digest = "python -m pyagent.workflows.notes_digest"
+trip-planner = "python -m pyagent.workflows.trip_planner"
+
+# -----------------------------------------------------------------------------
+# Examples
+#
+# 01–06 and 09 hit the real LLM (consume quota).
+# 07 and 08 are local-only (MCP subprocess / SQLite).
+# 10–25 are deterministic (scripted client or pure local primitives).
+# See examples/README.md for the coverage map.
+# -----------------------------------------------------------------------------
+
+example-01-hello-world = "python examples/01_hello_world.py"
+example-02-tool-calling = "python examples/02_tool_calling.py"
+example-03-multi-tool = "python examples/03_multi_tool.py"
+example-04-structured-output = "python examples/04_structured_output.py"
+example-05-resume-conversation = "python examples/05_resume_conversation.py"
+example-06-streaming = "python examples/06_streaming.py"
+example-07-mcp-tools = "python examples/07_mcp_tools.py"
+example-08-memory = "python examples/08_memory.py"
+example-09-fallback = "python examples/09_fallback.py"
+example-10-permissions = "python examples/10_permissions.py"
+example-11-tool-timeouts = "python examples/11_tool_timeouts.py"
+example-12-parallel-tool-calls = "python examples/12_parallel_tool_calls.py"
+example-13-mcp-tool-overrides = "python examples/13_mcp_tool_overrides.py"
+example-14-file-tools = "python examples/14_file_tools.py"
+example-15-execute-python = "python examples/15_execute_python.py"
+example-16-event-log = "python examples/16_event_log.py"
+example-17-tracing = "python examples/17_tracing.py"
+example-18-retry-and-classification = "python examples/18_retry_and_classification.py"
+example-19-provider-signatures = "python examples/19_provider_signatures.py"
+example-20-models = "python examples/20_models.py"
+example-21-memory-namespaces = "python examples/21_memory_namespaces.py"
+example-22-schemas = "python examples/22_schemas.py"
+example-23-cancellation = "python examples/23_cancellation.py"
+example-24-prompt-contents = "python examples/24_prompt_contents.py"
+example-25-cli-modes = "python examples/25_cli_modes.py"
+
+# -----------------------------------------------------------------------------
+# Verification (standalone executable specifications)
+#
+# No test framework. Every module has a matching verify_*.py that builds
+# real objects, prints ✓ / ✗ / SKIP, and exits non-zero on failure.
+# Live-API tests skip cleanly when the relevant key is absent.
+# execute_python skips cleanly when Deno is missing.
+# -----------------------------------------------------------------------------
+
+verify-scaffolding = "python scripts/verify_scaffolding.py"
+verify-schemas-context = "python scripts/verify_schemas_context.py"
+verify-tools = "python scripts/verify_tools.py"
+verify-llm-basic = "python scripts/verify_llm_basic.py"
+verify-llm-toolcall = "python scripts/verify_llm_toolcall.py"
+verify-agent = "python scripts/verify_agent.py"
+verify-structured = "python scripts/verify_structured.py"
+verify-server = "python scripts/verify_server.py"
+verify-mcp-roundtrip = "python scripts/verify_mcp_roundtrip.py"
+verify-retry = "python scripts/verify_retry.py"
+verify-quota = "python scripts/verify_quota.py"
+verify-stream = "python scripts/verify_stream.py"
+verify-stream-toolcall = "python scripts/verify_stream_toolcall.py"
+verify-provider-options = "python scripts/verify_provider_options.py"
+verify-provider-options-multiturn = "python scripts/verify_provider_options_multiturn.py"
+verify-fallback = "python scripts/verify_fallback.py"
+verify-fallback-real = "python scripts/verify_fallback_real.py"
+verify-event-log = "python scripts/verify_event_log.py"
+verify-resume = "python scripts/verify_resume.py"
+verify-resume-agent = "python scripts/verify_resume_agent.py"
+verify-main = "python scripts/verify_main.py"
+verify-resume-cli = "python scripts/verify_resume_cli.py"
+verify-timeouts = "python scripts/verify_timeouts.py"
+verify-permissions = "python scripts/verify_permissions.py"
+verify-real-tool = "python scripts/verify_real_tool.py"
+verify-write-tool = "python scripts/verify_write_tool.py"
+verify-approval-flow = "python scripts/verify_approval_flow.py"
+verify-mcp-spawn-failure = "python scripts/verify_mcp_spawn_failure.py"
+verify-research-brief = "python scripts/verify_research_brief.py"
+verify-notes-digest = "python scripts/verify_notes_digest.py"
+verify-trip-planner = "python scripts/verify_trip_planner.py"
+verify-iterative-brief = "python scripts/verify_iterative_brief.py"
+verify-parallel-tools = "python scripts/verify_parallel_tools.py"
+verify-tracing = "python scripts/verify_tracing.py"
+verify-memory = "python scripts/verify_memory.py"
+verify-brief-memory = "python scripts/verify_brief_memory.py"
+verify-execute-python = "python scripts/verify_execute_python.py"
+
+# -----------------------------------------------------------------------------
+# Meta tasks
+# -----------------------------------------------------------------------------
+
+verify-all = { depends-on = [
+    "verify-scaffolding",
+    "verify-schemas-context",
+    "verify-tools",
+    "verify-llm-basic",
+    "verify-llm-toolcall",
+    "verify-agent",
+    "verify-structured",
+    "verify-server",
+    "verify-mcp-roundtrip",
+    "verify-retry",
+    "verify-quota",
+    "verify-stream",
+    "verify-stream-toolcall",
+    "verify-provider-options",
+    "verify-provider-options-multiturn",
+    "verify-fallback",
+    "verify-fallback-real",
+    "verify-event-log",
+    "verify-resume",
+    "verify-resume-agent",
+    "verify-main",
+    "verify-resume-cli",
+    "verify-timeouts",
+    "verify-permissions",
+    "verify-real-tool",
+    "verify-write-tool",
+    "verify-approval-flow",
+    "verify-mcp-spawn-failure",
+    "verify-research-brief",
+    "verify-notes-digest",
+    "verify-trip-planner",
+    "verify-iterative-brief",
+    "verify-parallel-tools",
+    "verify-tracing",
+    "verify-memory",
+    "verify-brief-memory",
+    "verify-execute-python",
+] }
+
+check = "pyright"
+lint = "ruff check"
+fmt = "ruff format"
+fmt-check = "ruff format --check"
+ci = { depends-on = ["check", "lint", "fmt-check"] }
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [".pixi", "__pycache__", ".ruff_cache", ".examples", "runs", "workspace"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RUF"]
+
+[tool.pyright]
+include = ["src", "scripts"]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"

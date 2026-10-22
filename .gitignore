@@ -1,0 +1,49 @@
+# Pixi / conda environment
+.pixi/
+*.conda
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# Local environment (contains real keys — never commit)
+.env
+.env.local
+.env.*.local
+
+# Local scratch / personal files
+setup
+
+# Runtime artifacts
+runs/
+workspace/
+.examples/
+*.log
+verify-report.txt
+
+# SQLite (WAL and sidecars)
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+
+# Tooling caches
+.pyright/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+
+# Editor / OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
